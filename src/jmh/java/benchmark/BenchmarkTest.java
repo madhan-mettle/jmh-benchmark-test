@@ -15,7 +15,7 @@ public class BenchmarkTest {
 
     @Benchmark
     public void test1() throws InterruptedException {
-        TimeUnit.MILLISECONDS.sleep(2);
+        TimeUnit.MILLISECONDS.sleep(3);
     }
 
     @Benchmark
