@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.codehaus.groovy', name: 'groovy-json', version: '3.0.10'
+    }
+}
+
+plugins {
+    id "java"
+    id "me.champeau.jmh" version "0.6.6"
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+jmh {
+    resultFormat = 'JSON'
+    jvmArgs = ['-XX:-TieredCompilation']
+}
+
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+task convertJmhResultForGithubActions {
+    doLast {
+        def jmhResults = project.file("${project.buildDir}/results/jmh/results.json")
+        if (!jmhResults.exists()) {
+            println 'Results does not exist'
+            return
+        }
+        def ghActionData = new JsonSlurper().parse(jmhResults).collect { benchmark ->
+            [
+                    name : benchmark.benchmark,
+                    value: benchmark.primaryMetric.score,
+                    unit : benchmark.primaryMetric.scoreUnit,
+                    extra: "iterations: ${benchmark.measurementIterations}\nforks: ${benchmark.forks}\nthreads: ${benchmark.threads}\nmode: ${benchmark.mode}"
+            ]
+        }
+        project.file("${project.buildDir}/results/jmh/results-gh-benchmark.json").write(JsonOutput.toJson(ghActionData))
+    }
+    mustRunAfter "jmh"
+}
