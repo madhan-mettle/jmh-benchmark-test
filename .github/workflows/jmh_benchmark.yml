@@ -66,6 +66,8 @@ jobs:
       # Push gh-pages branch by yourself
       - name: Push benchmark result
 #        if: ${{ github.EVENT_NAME == 'push' }}
-        run: git push 'https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.REPOSITORY }}.git' gh-pages:gh-pages
+        run: |
+          git status
+          git push 'https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.REPOSITORY }}.git' gh-pages:gh-pages
 
 
