@@ -54,7 +54,7 @@ jobs:
           name: Card orchestrator benchmark
           tool: 'customSmallerIsBetter'
           output-file-path: ./build/results/jmh/results-gh-benchmark.json
-          external-data-json-path: ./cache/benchmark-data.json
+          external-data-json-path: ${{ github.EVENT_NAME == 'push' && null || './cache/benchmark-data.json' }}
           alert-threshold: '150%'
           comment-always: false
           fail-on-alert: true
