@@ -54,13 +54,18 @@ jobs:
           name: Card orchestrator benchmark
           tool: 'customSmallerIsBetter'
           output-file-path: ./build/results/jmh/results-gh-benchmark.json
-          external-data-json-path: ${{ github.EVENT_NAME == 'push' && null || './cache/benchmark-data.json' }}
+          external-data-json-path: ./cache/benchmark-data.json
           alert-threshold: '150%'
           comment-always: false
           fail-on-alert: true
           comment-on-alert: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # export the result to gh pages only on pushing the changes to master
-          auto-push: ${{ github.EVENT_NAME == 'push' }}
+          auto-push: false
+
+      # Push gh-pages branch by yourself
+      - name: Push benchmark result
+#        if: ${{ github.EVENT_NAME == 'push' }}
+        run: git push 'https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.REPOSITORY }}.git' gh-pages:gh-pages
 
 
