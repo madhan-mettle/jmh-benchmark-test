@@ -49,6 +49,7 @@ jobs:
 
       # Run `github-action-benchmark` action
       - name: Store benchmark result
+        if: ${{ github.EVENT_NAME == 'pull_request' }}
         uses: benchmark-action/github-action-benchmark@3d3bca03e83647895ef4f911fa57de3c7a391aaf
         with:
           name: Card orchestrator benchmark
@@ -65,9 +66,18 @@ jobs:
 
       # Push gh-pages branch by yourself
       - name: Push benchmark result
-#        if: ${{ github.EVENT_NAME == 'push' }}
-        run: |
-          git status
-          git push 'https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.REPOSITORY }}.git' gh-pages:gh-pages
+        if: ${{ github.EVENT_NAME == 'push' }}
+        uses: benchmark-action/github-action-benchmark@3d3bca03e83647895ef4f911fa57de3c7a391aaf
+        with:
+          name: Card orchestrator benchmark
+          tool: 'customSmallerIsBetter'
+          output-file-path: ./build/results/jmh/results-gh-benchmark.json
+          alert-threshold: '150%'
+          comment-always: false
+          fail-on-alert: true
+          comment-on-alert: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # export the result to gh pages only on pushing the changes to master
+          auto-push: true
 
 
